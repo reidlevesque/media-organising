@@ -89,7 +89,7 @@ sub groupPics
 
 ### MAIN ###
 
-my $inputDir = shift
+my $inputDir = shift;
 
 groupPics($inputDir, $inputDir, '[jJ][pP][gG]', 'jpg');
 groupPics($inputDir, "$inputDir/Screenshots", '[pP][nN][gG]', 'png');

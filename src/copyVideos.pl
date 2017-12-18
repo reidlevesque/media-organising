@@ -157,7 +157,7 @@ copyCameraVids($linksDir, 'sdcard/DCIM/*/*.[mM][pP]4');
 copyCameraVids($linksDir, 'phone/*.[mM][oO][vV]');
 copyCameraVids($linksDir, 'phone/*.[mM][pP]4');
 
-my $res = system("$srcDir/groupvids.pl $linksDir/camera_videos");
+my $res = system("$srcDir/groupVideos.pl $linksDir/camera_videos");
 if ($res > 0)
 {
     print "ERROR grouping camera videos.\n";

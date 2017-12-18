@@ -73,7 +73,7 @@ copyPics($linksDir, 'sdcard/DCIM/*/*.[jJ][pP][gG]');
 copyPics($linksDir, 'phone/*/*.[jJ][pP][gG]');
 copyPics($linksDir, 'phone/*/*.[pP][nN][gG]');
 
-my $res = system("$srcDir/grouppics.pl $linksDir/pictures");
+my $res = system("$srcDir/groupPictures.pl $linksDir/pictures");
 if ($res > 0)
 {
     print "ERROR grouping pictures.\n";
