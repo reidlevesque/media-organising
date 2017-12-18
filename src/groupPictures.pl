@@ -1,6 +1,7 @@
 #! /usr/bin/perl -w
 
 use strict;
+use File::chdir;
 
 my %months = (
     '00' => 'Smarch',
@@ -20,12 +21,11 @@ my %months = (
 
 sub groupPics
 {
-    my $inputDir = shift;
-    my $outputDir = shift;
+    my $outputSubDir = shift;
     my $searchSuffix = shift;
     my $suffix = shift;
 
-    my @pics = `ls --quoting-style=c $inputDir/*.$searchSuffix`;
+    my @pics = `ls --quoting-style=c ./*.$searchSuffix`;
 
     foreach my $pic (@pics)
     {
@@ -71,7 +71,7 @@ sub groupPics
             }
         }
            
-        my $picDir = "$outputDir/$year/$year\_$month-$months{$month}";
+        my $picDir = "$outputSubDir/$year/$year\_$month-$months{$month}";
         system("mkdir -p $picDir");
 
         my $picPrefix = "$year.$month.$day-$hour.$min.$sec";
@@ -90,6 +90,7 @@ sub groupPics
 ### MAIN ###
 
 my $inputDir = shift;
+chdir($inputDir);
 
-groupPics($inputDir, $inputDir, '[jJ][pP][gG]', 'jpg');
-groupPics($inputDir, "$inputDir/Screenshots", '[pP][nN][gG]', 'png');
+groupPics('.', '[jJ][pP][gG]', 'jpg');
+groupPics("./Screenshots", '[pP][nN][gG]', 'png');

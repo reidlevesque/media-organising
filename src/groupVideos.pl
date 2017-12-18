@@ -1,6 +1,7 @@
 #! /usr/bin/perl -w
 
 use strict;
+use File::chdir;
 
 my %months = (
     '00' => 'Smarch',
@@ -20,12 +21,11 @@ my %months = (
 
 sub groupVids
 {
-    my $inputDir = shift;
-    my $outputDir = shift;
+    my $outputSubDir = shift;
     my $searchSuffix = shift;
     my $suffix = shift;
 
-    my @vids = `ls --quoting-style=c $inputDir/*.$searchSuffix`;
+    my @vids = `ls --quoting-style=c ./*.$searchSuffix`;
 
     foreach my $vid (@vids)
     {
@@ -53,7 +53,7 @@ sub groupVids
             }
         }
 
-        my $vidDir = "$outputDir/$year/$year\_$month-$months{$month}";
+        my $vidDir = "$outputSubDir/$year/$year\_$month-$months{$month}";
         system("mkdir -p $vidDir");
 
         my $vidPrefix = "$year.$month.$day-$hour.$min.$sec";
@@ -72,7 +72,8 @@ sub groupVids
 ### MAIN ###
 
 my $inputDir = shift;
+chdir($inputDir);
 
-groupVids($inputDir, $inputDir, '[aA][vV][iI]', 'avi');
-groupVids($inputDir, $inputDir, '[mM][oO][vV]', 'mov');
-groupVids($inputDir, $inputDir, '[mM][pP]4', 'mp4');
+groupVids('.', '[aA][vV][iI]', 'avi');
+groupVids('.', '[mM][oO][vV]', 'mov');
+groupVids('.', '[mM][pP]4', 'mp4');

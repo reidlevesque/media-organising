@@ -6,6 +6,7 @@ Files will be stored in a folder structure as follows: YYYY/YYYY_MM_MMM/YYYY.MM.
 ## Prequisites
 * exif (sudo apt install exif)
 * perl
+* File::chdir (sudo apt install libfile-chdir-perl)
 
 You will also need to create the following set of symlinks in the `links` folder
 * pictures -> where you want to store your pictures
