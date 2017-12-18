@@ -71,7 +71,7 @@ sub groupVids
 
 ### MAIN ###
 
-my $inputDir = shift
+my $inputDir = shift;
 
 groupVids($inputDir, $inputDir, '[aA][vV][iI]', 'avi');
 groupVids($inputDir, $inputDir, '[mM][oO][vV]', 'mov');
