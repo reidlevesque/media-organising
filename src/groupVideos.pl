@@ -19,9 +19,10 @@ my %months = (
     '12' => 'December',
 );
 
+my $minVidSize = 5242880; # 5MB in bytes
+
 sub groupVids
 {
-    my $outputSubDir = shift;
     my $searchSuffix = shift;
     my $suffix = shift;
 
@@ -53,6 +54,9 @@ sub groupVids
             }
         }
 
+        my $size = `stat -c %s $vid`;
+        my $outputSubDir = $size > $minVidSize ? 'camera' : 'live_photos';
+
         my $vidDir = "$outputSubDir/$year/$year\_$month-$months{$month}";
         system("mkdir -p $vidDir");
 
@@ -74,6 +78,6 @@ sub groupVids
 my $inputDir = shift;
 chdir($inputDir);
 
-groupVids('.', '[aA][vV][iI]', 'avi');
-groupVids('.', '[mM][oO][vV]', 'mov');
-groupVids('.', '[mM][pP]4', 'mp4');
+groupVids('[aA][vV][iI]', 'avi');
+groupVids('[mM][oO][vV]', 'mov');
+groupVids('[mM][pP]4', 'mp4');
