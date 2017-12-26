@@ -55,7 +55,7 @@ sub groupVids
         }
 
         my $duration = `ffprobe -i $vid -show_entries format=duration -v quiet -of csv="p=0"`;
-        my $outputSubDir = $duration > $minVidDuration ? 'camera' : 'live_photos';
+        my $outputSubDir = $duration > $minVidDuration ? 'Camera' : 'Live\\ Photos';
 
         my $vidDir = "$outputSubDir/$year/$year\_$month-$months{$month}";
         system("mkdir -p $vidDir");
