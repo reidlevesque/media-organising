@@ -19,6 +19,25 @@ my %months = (
     '12' => 'December',
 );
 
+
+sub convertPics
+{
+    my $outputSubDir = shift;
+    my $searchSuffix = shift;
+    my $suffix = shift;
+
+    my @pics = `ls --quoting-style=c ./*.$searchSuffix`;
+
+    foreach my $pic (@pics)
+    {
+        chomp $pic;
+        my $convertedPic = $pic;
+        $convertedPic =~ s/$searchSuffix/$suffix/g;
+
+        system("heif-convert $pic $convertedPic");
+    }
+}
+
 sub groupPics
 {
     my $outputSubDir = shift;
@@ -91,6 +110,8 @@ sub groupPics
 
 my $inputDir = shift;
 chdir($inputDir);
+
+convertPics('.', '[hH][eE][iI][cC]', 'jpg');
 
 groupPics('.', '[jJ][pP][gG]', 'jpg');
 groupPics("./Screenshots", '[pP][nN][gG]', 'png');

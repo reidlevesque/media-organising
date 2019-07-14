@@ -70,8 +70,9 @@ my $srcDir = dirname(realpath($0));
 my $linksDir = dirname($srcDir) . '/links';
 
 copyPics($linksDir, 'sdcard/DCIM/*/*.[jJ][pP][gG]');
-copyPics($linksDir, 'phone/*/*.[jJ][pP][gG]');
-copyPics($linksDir, 'phone/*/*.[pP][nN][gG]');
+copyPics($linksDir, 'phone/*.[hH][eE][iI][cC]');
+copyPics($linksDir, 'phone/*.[jJ][pP][gG]');
+copyPics($linksDir, 'phone/*.[pP][nN][gG]');
 
 my $res = system("$srcDir/groupPictures.pl $linksDir/pictures");
 if ($res > 0)
