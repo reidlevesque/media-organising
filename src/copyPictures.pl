@@ -14,6 +14,18 @@ sub quit
     exit $ret;
 }
 
+sub unzipPics
+{
+    my $linksDir = shift;
+    my $zipFile = shift;
+    my $outputDir = shift;
+
+    if (-e "$linksDir/$zipFile") {
+        system("unzip \"$linksDir/$zipFile\" -d \"$linksDir/$outputDir\"");
+        system("rm \"$linksDir/$zipFile\"");
+    }
+}
+
 sub copyPics
 {
     my $linksDir = shift;
@@ -58,7 +70,7 @@ sub copyPics
         $res = system("rm -f \"$pic\"");
         if ($res > 0)
         {
-            print "ERROR removing \"$pic\" from memory card.\n";
+            print "ERROR removing $pic from memory card.\n";
             quit(3);
         }
     }
@@ -69,10 +81,12 @@ sub copyPics
 my $srcDir = dirname(realpath($0));
 my $linksDir = dirname($srcDir) . '/links';
 
+unzipPics($linksDir, 'downloads/iCloud Photos.zip', 'phone');
+
 copyPics($linksDir, 'sdcard/DCIM/*/*.[jJ][pP][gG]');
-copyPics($linksDir, 'phone/*.[hH][eE][iI][cC]');
-copyPics($linksDir, 'phone/*.[jJ][pP][gG]');
-copyPics($linksDir, 'phone/*.[pP][nN][gG]');
+copyPics($linksDir, 'phone/*/*.[hH][eE][iI][cC]');
+copyPics($linksDir, 'phone/*/*.[jJ][pP][gG]');
+copyPics($linksDir, 'phone/*/*.[pP][nN][gG]');
 
 my $res = system("$srcDir/groupPictures.pl $linksDir/pictures");
 if ($res > 0)

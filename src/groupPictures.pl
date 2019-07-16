@@ -35,6 +35,7 @@ sub convertPics
         $convertedPic =~ s/$searchSuffix/$suffix/g;
 
         system("heif-convert $pic $convertedPic");
+        system("rm $pic");
     }
 }
 

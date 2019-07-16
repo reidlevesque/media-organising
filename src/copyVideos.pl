@@ -14,6 +14,18 @@ sub quit
     exit $ret;
 }
 
+sub unzipVids
+{
+    my $linksDir = shift;
+    my $zipFile = shift;
+    my $outputDir = shift;
+
+    if (-e "$linksDir/$zipFile") {
+        system("unzip \"$linksDir/$zipFile\" -d \"$linksDir/$outputDir\"");
+        system("rm \"$linksDir/$zipFile\"");
+    }
+}
+
 sub renameVid
 {
 	my $dir = shift;
@@ -51,7 +63,7 @@ sub rmVid
 {
 	my $vid = shift;
 
-	my $res = system("rm -f $vid");
+	my $res = system("rm -f \"$vid\"");
     if ($res > 0)
     {
         print "ERROR removing $vid from camcorder.\n";
@@ -73,16 +85,16 @@ sub copyCameraVids
         chomp $vid;
 
         my $target = "$linksDir/videos/" . basename($vid);
-        $res = system("cp -v $vid $target");
+        $res = system("cp -v \"$vid\" \"$target\"");
         if ($res > 0)
         {
             print "ERROR copying $vid to laptop.\n";
             quit(1);
         }
 
-        my $sourceMd5 = `md5sum $vid | cut -d ' ' -f 1`;
+        my $sourceMd5 = `md5sum \"$vid\" | cut -d ' ' -f 1`;
         chomp $sourceMd5;
-        my $targetMd5 = `md5sum $target | cut -d ' ' -f 1`;
+        my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
         chomp $targetMd5;
 
         if ($sourceMd5 ne $targetMd5)
@@ -93,7 +105,7 @@ sub copyCameraVids
             quit(2);
         }
 
-        $res = system("rm -f $vid");
+        $res = system("rm -f \"$vid\"");
         if ($res > 0)
         {
             print "ERROR removing $vid from memory card.\n";
@@ -118,16 +130,16 @@ sub copyMTSs
         chomp $vid;
 		
         my $target = renameVid('$linksDir/camcorder/input', $vid);
-        $res = system("cp -av $vid $target");
+        $res = system("cp -av \"$vid\" \"$target\"");
         if ($res > 0)
         {
             print "ERROR copying $vid to $target.\n";
             quit(1);
         }
     
-        my $sourceMd5 = `md5sum $vid | cut -d ' ' -f 1`;
+        my $sourceMd5 = `md5sum \"$vid\" | cut -d ' ' -f 1`;
         chomp $sourceMd5;
-        my $targetMd5 = `md5sum $target | cut -d ' ' -f 1`;
+        my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
         chomp $targetMd5;
     
         if ($sourceMd5 ne $targetMd5)
@@ -152,10 +164,12 @@ sub copyMTSs
 my $srcDir = dirname(realpath($0));
 my $linksDir = dirname($srcDir) . '/links';
 
+unzipVids($linksDir, 'downloads/iCloud Photos.zip', 'phone');
+
 copyCameraVids($linksDir, 'sdcard/DCIM/*/*.[mM][oO][vV]');
 copyCameraVids($linksDir, 'sdcard/DCIM/*/*.[mM][pP]4');
-copyCameraVids($linksDir, 'phone/*.[mM][oO][vV]');
-copyCameraVids($linksDir, 'phone/*.[mM][pP]4');
+copyCameraVids($linksDir, 'phone/*/*.[mM][oO][vV]');
+copyCameraVids($linksDir, 'phone/*/*.[mM][pP]4');
 
 my $res = system("$srcDir/groupVideos.pl $linksDir/videos");
 if ($res > 0)
