@@ -75,7 +75,7 @@ sub copyCameraVids
 {
     my $linksDir = shift;
     my $link = shift;
-	
+
     my @vids = `ls $linksDir/$link`;
 
     my $res = 0;
@@ -122,13 +122,13 @@ sub copyMTSs
 
     my $vidBaseDir = "$linksDir/$link/AVCHD/BDMV";
     my @vids = `ls $vidBaseDir/STREAM/*.MTS`;
-    
+
     my $res = 0;
-    
+
     foreach my $vid (@vids)
     {
         chomp $vid;
-		
+
         my $target = renameVid('$linksDir/camcorder/input', $vid);
         $res = system("cp -av \"$vid\" \"$target\"");
         if ($res > 0)
@@ -136,12 +136,12 @@ sub copyMTSs
             print "ERROR copying $vid to $target.\n";
             quit(1);
         }
-    
+
         my $sourceMd5 = `md5sum \"$vid\" | cut -d ' ' -f 1`;
         chomp $sourceMd5;
         my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
         chomp $targetMd5;
-    
+
         if ($sourceMd5 ne $targetMd5)
         {
             print "ERROR: Copied video does not match video on camcorder, please try again\n";

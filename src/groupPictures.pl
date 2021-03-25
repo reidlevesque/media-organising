@@ -78,7 +78,7 @@ sub groupPics
             foreach my $line (@stat)
             {
                 chomp $line;
-           
+
                 if ($line =~ /^(\d\d\d\d)-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d).*$/)
                 {
                     $year = $1;
@@ -90,7 +90,7 @@ sub groupPics
                 }
             }
         }
-           
+
         my $picDir = "$outputSubDir/$year/$year\_$month-$months{$month}";
         system("mkdir -p $picDir");
 

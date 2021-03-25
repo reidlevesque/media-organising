@@ -32,13 +32,13 @@ sub copyPics
     my $link = shift;
 
     my @pics = `ls $linksDir/$link`;
-    
+
     my $res = 0;
-    
+
     foreach my $pic (@pics)
     {
         chomp $pic;
-    
+
         my $i = 0;
         my $target = "";
         do {
@@ -53,12 +53,12 @@ sub copyPics
             print "ERROR copying \"$pic\" to laptop.\n";
             quit(1);
         }
-        
+
         my $sourceMd5 = `md5sum \"$pic\" | cut -d ' ' -f 1`;
         chomp $sourceMd5;
         my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
         chomp $targetMd5;
-    
+
         if ($sourceMd5 ne $targetMd5)
         {
             print "ERROR: Copied picture does not match picture on memory card, please try again\n";
@@ -66,7 +66,7 @@ sub copyPics
             print "$target: $targetMd5\n";
             quit(2);
         }
-    
+
         $res = system("rm -f \"$pic\"");
         if ($res > 0)
         {
