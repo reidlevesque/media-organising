@@ -15,6 +15,7 @@ You will also need to create the following set of symlinks in the `links` folder
 
 * `pictures` -> where you want to store your pictures
 * `videos` -> where you want to store the videos
+* `downloads` -> (optional) if you want the scripts to extract `iCloud Photos.zip`, point this to where that file is stored. Generally you Downloads folder.
 * `sdcard` -> (optional) if you have an sdcard mounted, this script can copy from there
 * `phone` -> (optional) if you have a phone mounted, this script can copy from there
 
