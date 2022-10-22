@@ -1,7 +1,9 @@
 #! /usr/bin/perl -w
 
 use strict;
+use File::Basename;
 use File::chdir;
+use Cwd 'realpath';
 
 my %months = (
     '00' => 'Smarch',
@@ -19,23 +21,75 @@ my %months = (
     '12' => 'December',
 );
 
-
-sub convertPics
+sub quit
 {
-    my $outputSubDir = shift;
-    my $searchSuffix = shift;
-    my $suffix = shift;
+    my $ret = shift;
 
-    my @pics = `ls --quoting-style=c ./*.$searchSuffix`;
+    print "Press ENTER to continue.\n";
+    my $key;
+    read(STDIN, $key, 1);
+    exit $ret;
+}
+
+sub unzipPics
+{
+    my $linksDir = shift;
+    my $zipFile = shift;
+    my $outputDir = shift;
+
+    if (-e "$linksDir/$zipFile") {
+        system("unzip \"$linksDir/$zipFile\" -d \"$linksDir/$outputDir\"");
+        system("rm \"$linksDir/$zipFile\"");
+    }
+}
+
+sub copyPics
+{
+    my $linksDir = shift;
+    my $link = shift;
+
+    my @pics = `ls $linksDir/$link`;
+
+    my $res = 0;
 
     foreach my $pic (@pics)
     {
         chomp $pic;
-        my $convertedPic = $pic;
-        $convertedPic =~ s/$searchSuffix/$suffix/g;
 
-        system("heif-convert $pic $convertedPic");
-        system("rm $pic");
+        my $i = 0;
+        my $target = "";
+        do {
+            $target = "$linksDir/pictures/" . $i . "-" . basename($pic);
+            $i += 1;
+            if (-e "$target") { print "Found\n" }
+        } while (-e "$target");
+
+        $res = system("cp -v \"$pic\" \"$target\"");
+        if ($res > 0)
+        {
+            print "ERROR copying \"$pic\" to laptop.\n";
+            quit(1);
+        }
+
+        my $sourceMd5 = `md5sum \"$pic\" | cut -d ' ' -f 1`;
+        chomp $sourceMd5;
+        my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
+        chomp $targetMd5;
+
+        if ($sourceMd5 ne $targetMd5)
+        {
+            print "ERROR: Copied picture does not match picture on memory card, please try again\n";
+            print "$pic: $sourceMd5\n";
+            print "$target: $targetMd5\n";
+            quit(2);
+        }
+
+        $res = system("rm -f \"$pic\"");
+        if ($res > 0)
+        {
+            print "ERROR removing $pic from memory card.\n";
+            quit(3);
+        }
     }
 }
 
@@ -72,8 +126,8 @@ sub groupPics
             }
         }
 
-	if ($year == '0000')
-	{
+	    if ($year == '0000')
+	    {
             my @stat = `stat -c %y $pic`;
             foreach my $line (@stat)
             {
@@ -103,16 +157,18 @@ sub groupPics
             $i += 1;
         } while (-f "$picDir/$newPic");
 
-	system("mv -v $pic $picDir/$newPic");
+	    system("mv -v $pic $picDir/$newPic");
     }
 }
 
 ### MAIN ###
 
-my $inputDir = shift;
-chdir($inputDir);
+my $srcDir = dirname(realpath($0));
+my $linksDir = dirname($srcDir) . '/links';
 
-convertPics('.', '[hH][eE][iI][cC]', 'jpg');
-
+copyPics($linksDir, 'sdcard/DCIM/*/*.[jJ][pP][gG]');
+chdir($linksDir/pictures);
 groupPics('.', '[jJ][pP][gG]', 'jpg');
-groupPics("./Screenshots", '[pP][nN][gG]', 'png');
+
+print "SUCCESS\n";
+quit(0);
