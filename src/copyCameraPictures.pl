@@ -167,7 +167,7 @@ my $srcDir = dirname(realpath($0));
 my $linksDir = dirname($srcDir) . '/links';
 
 copyPics($linksDir, 'sdcard/DCIM/*/*.[jJ][pP][gG]');
-chdir($linksDir/pictures);
+chdir("$linksDir/pictures");
 groupPics('.', '[jJ][pP][gG]', 'jpg');
 
 print "SUCCESS\n";
