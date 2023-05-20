@@ -342,12 +342,16 @@ my $linksDir = dirname($srcDir) . '/links';
 unzipPics($linksDir, 'downloads/iCloud Photos.zip', 'phone');
 
 copyPics($linksDir, 'phone/*/*.[hH][eE][iI][cC]');
+copyPics($linksDir, 'phone/*/*.[pP][nN][gG]');
+copyPics($linksDir, 'phone/*/*.[jJ][pP][gG]');
+copyPics($linksDir, 'phone/*/*.[jJ][pP][eE][gG]');
 copyVids($linksDir, 'phone/*/*.[mM][oO][vV]');
 
 convertPics("$linksDir/pictures", '[hH][eE][iI][cC]', 'jpg');
 
 groupLivePics("$linksDir/pictures", "$linksDir/videos", "$linksDir/pictures", "$linksDir/videos/Phone", '[jJ][pP][gG]', 'jpg', 'mov');
 groupPics("$linksDir/pictures", "$linksDir/pictures/Screenshots", '[pP][nN][gG]', 'png');
+groupPics("$linksDir/pictures", "$linksDir/pictures", '[jJ][pP][eE][gG]', 'jpg');
 groupVids("$linksDir/videos", "$linksDir/videos/Phone", '[mM][oO][vV]', 'mov');
 
 print "SUCCESS\n";
