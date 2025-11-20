@@ -24,10 +24,6 @@ my %months = (
 sub quit
 {
     my $ret = shift;
-
-    print "Press ENTER to continue.\n";
-    my $key;
-    read(STDIN, $key, 1);
     exit $ret;
 }
 
@@ -48,13 +44,12 @@ sub copyPics
     my $linksDir = shift;
     my $link = shift;
 
-    my @pics = `ls $linksDir/$link`;
+    my @pics = glob("$linksDir/$link");
 
     my $res = 0;
 
     foreach my $pic (@pics)
     {
-        chomp $pic;
 
         my $i = 0;
         my $target = "";
@@ -71,10 +66,41 @@ sub copyPics
             quit(1);
         }
 
-        my $sourceMd5 = `md5sum \"$pic\" | cut -d ' ' -f 1`;
+        # Ensure the copied file has proper permissions for verification
+        system("chmod 644 \"$target\" 2>/dev/null");
+
+        # Get source MD5 with error checking
+        my $sourceMd5 = `md5sum \"$pic\" 2>&1 | cut -d ' ' -f 1`;
         chomp $sourceMd5;
-        my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
+        if ($sourceMd5 =~ /Permission denied|No such file/)
+        {
+            print "ERROR: Cannot read source file for verification: $pic\n";
+            print "Error details: $sourceMd5\n";
+            quit(4);
+        }
+
+        # Get target MD5 with error checking
+        my $targetMd5 = `md5sum \"$target\" 2>&1 | cut -d ' ' -f 1`;
         chomp $targetMd5;
+        if ($targetMd5 =~ /Permission denied|No such file/)
+        {
+            print "ERROR: Cannot read copied file for verification: $target\n";
+            print "Error details: $targetMd5\n";
+            print "Attempting to fix permissions and retry...\n";
+
+            # Try to fix permissions more aggressively
+            system("chmod 666 \"$target\" 2>/dev/null");
+
+            # Retry the md5sum
+            $targetMd5 = `md5sum \"$target\" 2>&1 | cut -d ' ' -f 1`;
+            chomp $targetMd5;
+
+            if ($targetMd5 =~ /Permission denied|No such file/)
+            {
+                print "ERROR: Still cannot read file after permission fix\n";
+                quit(5);
+            }
+        }
 
         if ($sourceMd5 ne $targetMd5)
         {
@@ -98,13 +124,12 @@ sub copyVids
     my $linksDir = shift;
     my $link = shift;
 
-    my @vids = `ls $linksDir/$link`;
+    my @vids = glob("$linksDir/$link");
 
     my $res = 0;
 
     foreach my $vid (@vids)
     {
-        chomp $vid;
 
         my $i = 0;
         my $target = "";
@@ -121,10 +146,41 @@ sub copyVids
             quit(1);
         }
 
-        my $sourceMd5 = `md5sum \"$vid\" | cut -d ' ' -f 1`;
+        # Ensure the copied file has proper permissions for verification
+        system("chmod 644 \"$target\" 2>/dev/null");
+
+        # Get source MD5 with error checking
+        my $sourceMd5 = `md5sum \"$vid\" 2>&1 | cut -d ' ' -f 1`;
         chomp $sourceMd5;
-        my $targetMd5 = `md5sum \"$target\" | cut -d ' ' -f 1`;
+        if ($sourceMd5 =~ /Permission denied|No such file/)
+        {
+            print "ERROR: Cannot read source video for verification: $vid\n";
+            print "Error details: $sourceMd5\n";
+            quit(4);
+        }
+
+        # Get target MD5 with error checking
+        my $targetMd5 = `md5sum \"$target\" 2>&1 | cut -d ' ' -f 1`;
         chomp $targetMd5;
+        if ($targetMd5 =~ /Permission denied|No such file/)
+        {
+            print "ERROR: Cannot read copied video for verification: $target\n";
+            print "Error details: $targetMd5\n";
+            print "Attempting to fix permissions and retry...\n";
+
+            # Try to fix permissions more aggressively
+            system("chmod 666 \"$target\" 2>/dev/null");
+
+            # Retry the md5sum
+            $targetMd5 = `md5sum \"$target\" 2>&1 | cut -d ' ' -f 1`;
+            chomp $targetMd5;
+
+            if ($targetMd5 =~ /Permission denied|No such file/)
+            {
+                print "ERROR: Still cannot read file after permission fix\n";
+                quit(5);
+            }
+        }
 
         if ($sourceMd5 ne $targetMd5)
         {
@@ -149,16 +205,15 @@ sub convertPics
     my $searchSuffix = shift;
     my $suffix = shift;
 
-    my @pics = `ls --quoting-style=c $picsDir/*.$searchSuffix`;
+    my @pics = glob("$picsDir/*.$searchSuffix");
 
     foreach my $pic (@pics)
     {
-        chomp $pic;
         my $convertedPic = $pic;
         $convertedPic =~ s/$searchSuffix/$suffix/g;
 
-        system("heif-convert $pic $convertedPic");
-        system("rm $pic");
+        system("heif-convert \"$pic\" \"$convertedPic\"");
+        system("rm \"$pic\"");
     }
 }
 
@@ -223,11 +278,10 @@ sub groupLivePics
     my $picSuffix = shift;
     my $vidSuffix = shift;
 
-    my @pics = `ls --quoting-style=c $picsInputDir/*.$searchSuffix`;
+    my @pics = glob("$picsInputDir/*.$searchSuffix");
 
     foreach my $pic (@pics)
     {
-        chomp $pic;
 
         my ($subDir, $filePrefix) = &parsePic($pic);
 
@@ -252,7 +306,10 @@ sub groupLivePics
             $newVid = "$filePrefix-$i.$vidSuffix";
             $i += 1;
         } while (-f "$vidDir/$newVid");
-	    system("mv -v $vid $vidDir/$newVid");
+
+        if (-f $vid) {
+            system("mv -v $vid $vidDir/$newVid");
+        }
     }
 }
 
@@ -263,11 +320,10 @@ sub groupPics
     my $searchSuffix = shift;
     my $suffix = shift;
 
-    my @pics = `ls --quoting-style=c $inputDir/*.$searchSuffix`;
+    my @pics = glob("$inputDir/*.$searchSuffix");
 
     foreach my $pic (@pics)
     {
-        chomp $pic;
 
         my ($subDir, $filePrefix) = &parsePic($pic);
 
@@ -290,11 +346,10 @@ sub groupVids
     my $searchSuffix = shift;
     my $suffix = shift;
 
-    my @vids = `ls --quoting-style=c $inputDir/*.$searchSuffix`;
+    my @vids = glob("$inputDir/*.$searchSuffix");
 
     foreach my $vid (@vids)
     {
-        chomp $vid;
         my $year = '0000';
         my $month = '00';
         my $day = '00';

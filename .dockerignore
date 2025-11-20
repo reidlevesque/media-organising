@@ -1,0 +1,40 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Local links directory (will be created in container)
+links/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test data or local media files
+pictures/
+videos/
+downloads/
+sdcard/
+phone/
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp

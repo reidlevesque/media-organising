@@ -3,6 +3,92 @@
 Collection of scripts to group pictures and videos. These scripts will rename the picture based on the time they were taken. It will rename videos based on the file timestamp.
 Files will be stored in a folder structure as follows: `YYYY/YYYY_MM_MMM/YYYY.MM.DD-HH.mm.ss.ms.jpg`
 
+## Setup Options
+
+You can either use Docker (recommended) or install dependencies manually.
+
+### Option 1: Using Docker (Recommended)
+
+The easiest way to use these scripts is with Docker, which handles all dependencies automatically.
+
+#### Prerequisites for Docker
+
+* Docker and Docker Compose installed on your system
+
+#### Docker Setup
+
+1. **Build the Docker image:**
+
+   ```bash
+   docker-compose build
+   ```
+
+2. **Configure your directories:**
+
+   Edit the `.env` file and update it with your paths:
+
+   ```bash
+   # Required directories
+   PICTURES_DIR=/path/to/your/pictures
+   VIDEOS_DIR=/path/to/your/videos
+   DOWNLOADS_DIR=/path/to/your/downloads
+
+   # Optional directories
+   SDCARD_DIR=/path/to/sdcard/mount
+   ```
+
+3. **Run the container:**
+
+   ```bash
+   # Interactive mode with help menu
+   docker-compose run --rm media-organizer
+
+   # Run specific commands
+   docker-compose run --rm media-organizer copy-iphone
+   docker-compose run --rm media-organizer copy-camera
+   docker-compose run --rm media-organizer copy-videos
+   docker-compose run --rm media-organizer group-videos
+
+   # Check mount points
+   docker-compose run --rm media-organizer check
+   ```
+
+   **Run with Dropbox Pause (Recommended):**
+
+   If you have Dropbox installed and want to pause syncing during operations to avoid conflicts:
+
+   ```bash
+   # Use the wrapper script that helps manage Dropbox syncing
+   ./run.sh copy-iphone
+   ./run.sh copy-camera
+   ./run.sh copy-videos
+   ./run.sh group-videos
+
+   # Or with no arguments for default action (copy-iphone)
+   ./run.sh
+   ```
+
+   The wrapper script will:
+   * Prompt you to pause Dropbox syncing before operations
+   * Run the media organizer in Docker
+   * Remind you to resume Dropbox syncing when done
+
+4. **Alternative: Run with docker directly:**
+
+   ```bash
+   # Build the image
+   docker build -t media-organizer .
+
+   # Run with volume mounts
+   docker run -it --rm \
+     -v /path/to/pictures:/mnt/pictures \
+     -v /path/to/videos:/mnt/videos \
+     -v /path/to/downloads:/mnt/downloads \
+     media-organizer
+   ```
+
+### Option 2: Manual Setup
+
 ## Prequisites
 
 * `exif` (`sudo apt install exif`)
