@@ -76,7 +76,6 @@ main() {
     $DOCKER_COMPOSE build
     $DOCKER_COMPOSE run --rm media-organizer "$@"
     EXIT_CODE=$?
-    colima stop
 
     echo ""
 
